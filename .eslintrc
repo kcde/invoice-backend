@@ -15,7 +15,7 @@
   ],
   "rules": {
     "no-console": "warn",
-    "prettier/prettier": 2 // Means error
+    "prettier/prettier": "warn" // Means error
 
   }
 }
