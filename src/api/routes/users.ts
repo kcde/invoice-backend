@@ -1,10 +1,12 @@
-import { Request, Router } from 'express';
+import { Request, Response, Router } from 'express';
 
 import { createUser } from '../../controllers/users.controller';
 
 const users = Router();
+users.get('/', (req: Request, res: Response) => {
+  res.send('resolved');
+});
 
 users.post('/', createUser);
-//users.get('/');
 
 export default users;
