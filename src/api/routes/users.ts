@@ -1,10 +1,10 @@
 import { Request, Router } from 'express';
 
+import { createUser } from '../../controllers/users.controller';
+
 const users = Router();
 
-users.post('/', (req: Request, res: Response) => {
-  console.log('creating users ');
-});
-users.get('/', (req: Request, res: Response) => {
-  console.log('getting users info');
-});
+users.post('/', createUser);
+//users.get('/');
+
+export default users;
