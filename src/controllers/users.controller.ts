@@ -2,8 +2,8 @@ import { Request, Response } from 'express';
 import userModel from '../models/user.model';
 import type { IUserCreateBody } from '../types';
 import jwt from 'jsonwebtoken';
-
 import bcrypt from 'bcrypt';
+import { validateEmail } from '../utils';
 
 const { SALT_ROUNDS, PRIVATE_KEY } = process.env;
 
@@ -13,6 +13,11 @@ export async function createUser(req: Request, res: Response) {
   //Email and Password must be provided
   if (!newUserDetails.email || !newUserDetails.password) {
     return res.status(400).json({ error: 'email and password required' });
+  }
+
+  //check if email is valid
+  if (!validateEmail(newUserDetails.email)) {
+    return res.status(400).json({ error: 'invalid email' });
   }
 
   //encrypt password
