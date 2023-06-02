@@ -18,7 +18,6 @@ app.get('/', (req: Request, res: Response) => {
   res.send('API WORKING FINE! CHECK /API ROUTE');
 });
 
-//! user should be authenticated before accessing the api route
 app.use('/api', api);
 
 app.listen(1234, async () => {

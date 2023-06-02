@@ -1,12 +1,15 @@
 import { Request, Response } from 'express';
 import userModel from '../models/user.model';
+import type { IUserCreateBody } from '../types';
 
-export async function createUser(_req: Request, res: Response) {
+export async function createUser(req: Request, res: Response) {
+  const newUserDetails: IUserCreateBody = req.body;
+
+  if (!newUserDetails.email || !newUserDetails.password) {
+    return res.status(400).json({ error: 'email and password required' });
+  }
   try {
-    const data = await userModel.create({
-      email: 'a@a.com',
-      password: 'balllwordford'
-    });
+    const data = await userModel.create(newUserDetails);
 
     return res.json(data);
   } catch (err) {
