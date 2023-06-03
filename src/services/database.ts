@@ -3,9 +3,11 @@ import dotenv from 'dotenv';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 dotenv.config();
+
+let testMongo: MongoMemoryServer;
 const { MONGO_URI, ENV } = process.env;
 export async function connectDB() {
-  const testMongo = await MongoMemoryServer.create();
+  testMongo = await MongoMemoryServer.create();
   const testURI = testMongo.getUri();
   try {
     if (ENV == 'TEST') {
@@ -21,4 +23,7 @@ export async function connectDB() {
 
 export async function disconnectDB() {
   await mongoose.disconnect();
+  if (testMongo) {
+    await testMongo.stop();
+  }
 }

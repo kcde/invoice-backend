@@ -10,7 +10,7 @@
     "lint": "eslint . --ext  .ts ",
     "lint-and-fix": "eslint . --ext  .ts --fix ",
     "format": "prettier --config .prettierrc 'src/**/*.ts' --write",
-    "test": "export ENV=TEST && npm run build && jest --detectOpenHandles && rimraf ./build"
+    "test": "export ENV=TEST && npm run build && jest && rimraf ./build"
   },
   "jest": {
     "testEnvironment": "node",
