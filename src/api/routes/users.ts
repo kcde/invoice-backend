@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
 
-import { createUser } from '../../controllers/users.controller';
+import { createUser } from '../../controllers/users/users.controller';
 
 const users = Router();
 users.get('/', (req: Request, res: Response) => {

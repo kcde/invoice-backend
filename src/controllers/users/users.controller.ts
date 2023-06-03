@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import userModel from '../models/user.model';
-import type { IUserCreateBody } from '../types';
+import userModel from '../../models/user.model';
+import type { IUserCreateBody } from '../../types';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { validateEmail } from '../utils';
+import { validateEmail } from '../../utils';
 
 const { SALT_ROUNDS, PRIVATE_KEY } = process.env;
 
