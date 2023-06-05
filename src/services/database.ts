@@ -28,9 +28,10 @@ mongoose.connection.once('open', () => {
 });
 
 export async function disconnectDB() {
+  await mongoose.disconnect();
+
   if (testMongo) {
     //stop mongo memory server
     await testMongo.stop();
-    await mongoose.disconnect();
   }
 }
