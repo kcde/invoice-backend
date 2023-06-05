@@ -7,10 +7,12 @@ dotenv.config();
 let testMongo: MongoMemoryServer;
 const { MONGO_URI, ENV } = process.env;
 export async function connectDB() {
-  testMongo = await MongoMemoryServer.create();
-  const testURI = testMongo.getUri();
   try {
+    testMongo = await MongoMemoryServer.create();
+    const testURI = testMongo.getUri();
     if (ENV == 'TEST') {
+      console.log('running test');
+
       await mongoose.connect(testURI as unknown as string);
       return;
     }
@@ -21,9 +23,14 @@ export async function connectDB() {
   }
 }
 
+mongoose.connection.once('open', () => {
+  console.log('mongo connected');
+});
+
 export async function disconnectDB() {
-  await mongoose.disconnect();
   if (testMongo) {
+    //stop mongo memory server
     await testMongo.stop();
+    await mongoose.disconnect();
   }
 }

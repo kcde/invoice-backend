@@ -1,11 +1,14 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import userModel from '../../models/user.model';
 import type { IUserCreateBody } from '../../types';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import dotenv from 'dotenv';
 import { validateEmail } from '../../utils';
 
-const { SALT_ROUNDS, PRIVATE_KEY } = process.env;
+dotenv.config();
+
+const { SALT_RONDS, PRIVATE_KEY } = process.env;
 
 export async function createUser(req: Request, res: Response) {
   const newUserDetails: IUserCreateBody = req.body;
@@ -20,36 +23,17 @@ export async function createUser(req: Request, res: Response) {
     return res.status(400).json({ error: 'invalid email' });
   }
 
-  //encrypt password
-  let hashedPassword: string;
   try {
-    hashedPassword = await bcrypt.hash(
+    //encrypt password
+    const hashedPassword = await bcrypt.hash(
       newUserDetails.password,
-      Number(SALT_ROUNDS as unknown as number)
+      Number(SALT_RONDS as unknown as number)
     );
-  } catch (err) {
-    return res.status(500).json({ error: 'unable to process request' });
-  }
 
-  //Generate jwt token
-  let jwtToken!: string;
-  try {
-    jwt.sign(
-      newUserDetails.email,
-      PRIVATE_KEY as unknown as string,
-      (err, hash) => {
-        if (err) {
-          return res.status(500).json({ error: 'unable to process request' });
-        }
-        jwtToken = hash as string;
-      }
-    );
-  } catch (err) {
-    return res.status(500).json({ error: 'unable to process request' });
-  }
+    //Generate JWT
+    const jwtToken = jwt.sign(newUserDetails.email, PRIVATE_KEY as string);
 
-  //Create user and add to database
-  try {
+    //Create user and add to database
     const user = {
       ...newUserDetails,
       password: hashedPassword
@@ -64,6 +48,8 @@ export async function createUser(req: Request, res: Response) {
       return res.status(409).json({ error: 'Duplicate email ' });
     }
 
-    return res.status(500).json({ error: 'Unable to create user' });
+    res.status(500).json({ error: 'unable to process request' });
+
+    console.error(err as string);
   }
 }
