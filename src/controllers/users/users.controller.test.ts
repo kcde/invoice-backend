@@ -59,4 +59,9 @@ describe('Test /api/users ', () => {
 
     expect(response.status).toBe(201);
   });
+  it('Should return 409 status if email is duplicate', async () => {
+    const response = await request.post('/api/users').send(user.valid);
+
+    expect(response.status).toBe(409);
+  });
 });
