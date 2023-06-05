@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import userModel from '../../models/user.model';
-import type { IUserCreateBody } from '../../types';
+import type { IUserCreateBody, IUserLoginBody } from '../../types';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
+import bcrypt, { compare } from 'bcrypt';
 import dotenv from 'dotenv';
 import { validateEmail } from '../../utils';
 
@@ -52,4 +52,54 @@ export async function createUser(req: Request, res: Response) {
 
     console.error(err as string);
   }
+}
+
+export async function loginUser(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const loginDetails: IUserLoginBody = req.body;
+
+  //Email and Password must be provided
+  if (!loginDetails.email || !loginDetails.password) {
+    return res.status(400).json({ error: 'email and password required' });
+  }
+
+  // find user with email
+
+  try {
+    const user = await userModel.findOne(
+      { email: loginDetails.email },
+      {
+        __v: 0,
+        _id: 0
+      }
+    );
+    if (user) {
+      //check if password matches provided password
+      const passwordMatch = await bcrypt.compare(
+        loginDetails.password,
+        user.password
+      );
+
+      if (passwordMatch) {
+        // generate JWT
+        const jwtToken = jwt.sign(user.email, PRIVATE_KEY as string);
+        return res.status(200).send({ token: jwtToken, email: user.email });
+      } else {
+        //invalid credential
+        return res.status(401).json({ error: 'Invalid credentials' });
+      }
+    } else {
+      return res.status(404).json({ error: 'User not found' });
+    }
+  } catch (err) {
+    next(err);
+  }
+
+  //check if email is valid
+  //   if (!validateEmail(loginDetails.email)) {
+  //     return res.status(400).json({ error: 'invalid email' });
+  //   }
 }

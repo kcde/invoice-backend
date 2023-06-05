@@ -64,4 +64,21 @@ describe('Test /api/users ', () => {
 
     expect(response.status).toBe(409);
   });
+  it('Should return 200 status on successful login', async () => {
+    const response = await request.post('/api/users/login').send(user.valid);
+
+    expect(response.status).toBe(200);
+  });
+  it('Should return 404 status on invalid user ', async () => {
+    const response = await request.post('/api/users/login').send(user.invalid);
+
+    expect(response.status).toBe(404);
+  });
+  it('Should return 401 status on invalid password on valid email ', async () => {
+    const response = await request
+      .post('/api/users/login')
+      .send({ email: user.valid.email, password: user.invalid.password });
+
+    expect(response.status).toBe(401);
+  });
 });
