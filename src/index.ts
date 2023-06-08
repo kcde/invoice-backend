@@ -4,7 +4,7 @@ import express, { Response, Request } from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 
-import { connectDB } from './services/database';
+import api from './api';
 
 dotenv.config();
 
@@ -14,10 +14,9 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('gotten');
+  res.send('API WORKING FINE! CHECK /API ROUTE');
 });
 
-app.listen(1234, async () => {
-  await connectDB();
-  console.log('server is listening');
-});
+app.use('/api', api);
+
+export default app;
