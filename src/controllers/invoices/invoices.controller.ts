@@ -12,8 +12,10 @@ const { PRIVATE_KEY } = process.env;
 
 export async function createInvoice(req: Request, res: Response) {
   //get user unique email from token
-  const token = req.headers.authorization?.split(' ')[1] as string;
+  const userEmail = res.locals.userEmail as string;
   const invoice: IInvoice = req.body;
+
+  console.log(userEmail);
 
   try {
     invoiceSchema.validateSync(invoice, {
@@ -21,7 +23,7 @@ export async function createInvoice(req: Request, res: Response) {
       stripUnknown: true
     });
 
-    const userEmail = jwt.verify(token, PRIVATE_KEY as string);
+    // const userEmail = jwt.verify(token, PRIVATE_KEY as string);
 
     // Get user's object id
     const userObj = await userModel.findOne({ email: userEmail });

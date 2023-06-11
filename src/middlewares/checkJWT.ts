@@ -22,7 +22,8 @@ export async function checkJWT(
   }
   //if exists verrify token
   try {
-    jwt.verify(token as string, PRIVATE_KEY as string);
+    const userEmail = jwt.verify(token as string, PRIVATE_KEY as string);
+    res.locals.userEmail = userEmail;
     next();
   } catch (err) {
     console.log(err);
