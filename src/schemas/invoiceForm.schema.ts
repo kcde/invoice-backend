@@ -2,6 +2,7 @@ import { object, string, array, number } from 'yup';
 
 export const invoiceSchema = object({
   id: string(),
+  user: string(),
   sender: object({
     streetAddress: string().trim().required("Sender's Street Address Required"),
     city: string().trim().required("Sender's City Required"),

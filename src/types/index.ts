@@ -1,4 +1,5 @@
 import { Request } from 'express';
+import { ObjectId, Schema } from 'mongoose';
 
 export interface IUserCreateBody {
   email: string;
@@ -21,6 +22,7 @@ interface IInvoiceItem {
 }
 export interface IInvoice {
   id?: string;
+  user?: Schema.Types.ObjectId;
   sender: {
     streetAddress: string;
     city: string;

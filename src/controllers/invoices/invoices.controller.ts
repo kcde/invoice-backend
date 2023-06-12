@@ -6,6 +6,9 @@ import { ValidationError } from 'yup';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { invoiceSchema } from '../../schemas/invoiceForm.schema';
+import { generateID } from '../../utils';
+import invoiceModel from '../../models/invoice.model';
+import { Schema } from 'mongoose';
 dotenv.config();
 
 const { PRIVATE_KEY } = process.env;
@@ -23,14 +26,15 @@ export async function createInvoice(req: Request, res: Response) {
       stripUnknown: true
     });
 
-    // const userEmail = jwt.verify(token, PRIVATE_KEY as string);
-
     // Get user's object id
     const userObj = await userModel.findOne({ email: userEmail });
-    const objectId = userObj?._id;
+    const objectId = userObj?._id as unknown as Schema.Types.ObjectId;
 
     if (objectId) {
-      res.json(objectId);
+      invoice.id = await generateID();
+      invoice.user = objectId;
+      const newInvoice = await invoiceModel.create(invoice);
+      res.json(newInvoice);
     } else {
       return res.json({});
     }

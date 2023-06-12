@@ -1,8 +1,11 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import { IInvoice } from '../types';
 
 const invoiceSchema = new mongoose.Schema<IInvoice>({
   id: String,
+  user: {
+    type: Schema.Types.ObjectId
+  },
   sender: {
     streetAddress: String,
     city: String,
