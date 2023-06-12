@@ -7,8 +7,6 @@ export function validateEmail(email: string): boolean {
 export async function generateID() {
   const nanoidLetters = customAlphabet('abcdefghijklmnopqrstuvwxyz', 2);
   const nanoidNumbers = customAlphabet('1234567890', 4);
-  console.log(`${nanoidLetters()}${nanoidNumbers()}`);
-
   return `${nanoidLetters()}${nanoidNumbers()}`;
 }
 

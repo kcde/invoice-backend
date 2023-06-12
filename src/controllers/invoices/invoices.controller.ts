@@ -1,9 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import userModel from '../../models/user.model';
 import type { IInvoice } from '../../types';
-
 import { ValidationError } from 'yup';
-import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { invoiceSchema } from '../../schemas/invoiceForm.schema';
 import { generateID } from '../../utils';
@@ -11,17 +9,12 @@ import invoiceModel from '../../models/invoice.model';
 import { Schema } from 'mongoose';
 dotenv.config();
 
-const { PRIVATE_KEY } = process.env;
-
 export async function createInvoice(req: Request, res: Response) {
   //get user unique email from token
   const userEmail = res.locals.userEmail as string;
   const invoice: IInvoice = req.body;
-
-  console.log(userEmail);
-
   try {
-    invoiceSchema.validateSync(invoice, {
+    invoiceSchema.validate(invoice, {
       abortEarly: false,
       stripUnknown: true
     });
@@ -33,21 +26,25 @@ export async function createInvoice(req: Request, res: Response) {
     if (objectId) {
       invoice.id = await generateID();
       invoice.user = objectId;
+
+      //save new info to invoices database referencing the use with the object id
       const newInvoice = await invoiceModel.create(invoice);
-      res.json(newInvoice);
+      res.status(201).json(newInvoice);
     } else {
-      return res.json({});
+      return res.status(404).json({ error: 'user not found' });
     }
   } catch (err) {
     console.log(err);
+    const errorCode = (err as { code: number }).code;
 
     if (err instanceof ValidationError) {
       return res.status(400).json({ error: err.errors });
     }
-    return res.status(400).send('gjgj');
-  }
 
-  //get object is of user from DB
-  // create one to many relationship
-  //save new info to invoices database referencing the use with the object id
+    if (errorCode && errorCode == 11000) {
+      return res.status(409).json({ error: 'Duplicate email ' });
+    }
+
+    res.status(500).json({ error: 'unable to process request' });
+  }
 }
