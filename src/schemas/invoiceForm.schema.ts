@@ -1,4 +1,4 @@
-import { object, string, array, number } from 'yup';
+import { object, string, array, number, date } from 'yup';
 
 export const invoiceSchema = object({
   id: string(),
@@ -27,6 +27,9 @@ export const invoiceSchema = object({
     country: string().trim().required('Client country required')
   }).required('Client Details Required'),
   description: string().trim().required('Invoice Description required'),
+  issueDate: date().required('Issue Date is required'),
+  paymentTerm: number().required('Payment term is required'),
+
   items: array()
     .of(
       object().shape({

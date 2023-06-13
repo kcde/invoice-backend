@@ -14,7 +14,7 @@ export async function createInvoice(req: Request, res: Response) {
   const userEmail = res.locals.userEmail as string;
   const invoice: IInvoice = req.body;
   try {
-    invoiceSchema.validate(invoice, {
+    invoiceSchema.validateSync(invoice, {
       abortEarly: false,
       stripUnknown: true
     });
@@ -25,6 +25,8 @@ export async function createInvoice(req: Request, res: Response) {
 
     if (objectId) {
       invoice.id = await generateID();
+      //! VERIFY OBJECT ID TO BE A MONGO ONJECT ID
+
       invoice.user = objectId;
 
       //save new info to invoices database referencing the use with the object id
