@@ -42,5 +42,12 @@ export interface IInvoice {
   description: string;
   issueDate: Date;
   paymentTerm: string;
+  status: InvoiceStatus;
   items: IInvoiceItem[];
+}
+
+export enum InvoiceStatus {
+  Pending = 'pending',
+  Paid = 'paid',
+  Draft = 'draft'
 }

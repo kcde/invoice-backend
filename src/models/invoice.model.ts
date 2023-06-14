@@ -30,6 +30,7 @@ const invoiceSchema = new mongoose.Schema<IInvoice>({
   description: String,
   issueDate: Date,
   paymentTerm: String,
+  status: String,
   items: [
     {
       id: String,
