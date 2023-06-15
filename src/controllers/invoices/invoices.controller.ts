@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import userModel from '../../models/user.model';
 import { InvoiceStatus, type IInvoice } from '../../types';
 import { ValidationError } from 'yup';
@@ -51,5 +51,17 @@ export async function createInvoice(req: Request, res: Response) {
     }
 
     res.status(500).json({ error: 'unable to process request' });
+  }
+}
+
+export async function getInvoice(req: Request, res: Response) {
+  try {
+    const user = await userModel.findOne({ email: res.locals.userEmail });
+    const invoices = await invoiceModel.find({ user: user?._id });
+    res.status(200).json(invoices);
+  } catch (err) {
+    console.log(err);
+
+    return res.status(500).json({ error: 'unable to process request' });
   }
 }

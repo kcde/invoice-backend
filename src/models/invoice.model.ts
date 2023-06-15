@@ -9,6 +9,7 @@ const invoiceSchema = new mongoose.Schema<IInvoice>({
   },
   user: {
     type: Schema.Types.ObjectId,
+    ref: 'user',
     required: true
   },
   sender: {
