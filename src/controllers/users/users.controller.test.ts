@@ -1,7 +1,6 @@
 import supertest from 'supertest';
 import app from '../../index';
 import { disconnectDB, connectDB } from '../../services/database';
-import server from '../../server';
 
 const request = supertest(app);
 
@@ -80,32 +79,5 @@ describe('Test /api/users ', () => {
       .send({ email: user.valid.email, password: user.invalid.password });
 
     expect(response.status).toBe(401);
-  });
-});
-
-describe('Test /api/invoices', () => {
-  beforeAll(async () => {
-    await connectDB();
-  });
-
-  afterAll(async () => {
-    await disconnectDB();
-  });
-
-  const user = {
-    email: 'johndoe@test.com',
-    password: 'lang'
-  };
-
-  it('Should return status 201 if token and ause is valid', async () => {
-    const { body } = await request.post('/api/invoices').send();
-
-    const { token } = body;
-
-    const response = await request.post('/api/invoices').send({
-      headers: {
-        Authentication: `Bearer ${token}`
-      }
-    });
   });
 });
