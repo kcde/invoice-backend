@@ -8,7 +8,7 @@ import { validateEmail } from '../../utils';
 
 dotenv.config();
 
-const { SALT_RONDS, PRIVATE_KEY } = process.env;
+const { SALT_ROUNDS, PRIVATE_KEY } = process.env;
 
 export async function createUser(req: Request, res: Response) {
   const newUserDetails: IUserCreateBody = req.body;
@@ -27,7 +27,7 @@ export async function createUser(req: Request, res: Response) {
     //encrypt password
     const hashedPassword = await bcrypt.hash(
       newUserDetails.password,
-      Number(SALT_RONDS as unknown as number)
+      Number(SALT_ROUNDS as unknown as number)
     );
 
     //Generate JWT
