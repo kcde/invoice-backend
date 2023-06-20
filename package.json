@@ -1,7 +1,7 @@
 {
   "name": "node_ts_starter",
   "version": "1.0.0",
-  "description": "TypeScript project project boilerplate with cold-reloading, and scripts for building, development, and production environments.",
+  "description": "Backend for invoicing app",
   "main": "index.js",
   "scripts": {
     "dev": "npx nodemon",
@@ -20,15 +20,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kcde/node_ts_starter.git"
+    "url": "git+https://github.com/kcde/invoice-backend.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/kcde/node_ts_starter/issues"
+    "url": "https://github.com/kcde/invoice-backend/issues"
   },
-  "homepage": "https://github.com/kcde/node_ts_starter#readme",
+  "homepage": "https://github.com/kcde/invoice-backend#readme",
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
     "@types/cors": "^2.8.13",
