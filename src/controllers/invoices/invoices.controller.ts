@@ -14,11 +14,12 @@ export async function createInvoice(req: Request, res: Response) {
   const userEmail = res.locals.userEmail as string;
   const invoice: IInvoice = req.body;
   try {
-    invoiceSchema.validateSync(invoice, {
-      abortEarly: false,
-      stripUnknown: true
-    });
-
+    if (invoice.status == InvoiceStatus.Pending) {
+      invoiceSchema.validateSync(invoice, {
+        abortEarly: false,
+        stripUnknown: true
+      });
+    }
     // Get user's object id
     const userObj = await userModel.findOne({ email: userEmail });
     const objectId = userObj?._id as unknown as Schema.Types.ObjectId;
@@ -28,9 +29,6 @@ export async function createInvoice(req: Request, res: Response) {
       //! VERIFY OBJECT ID TO BE A MONGO ONJECT ID
 
       invoice.user = objectId;
-
-      //Invoice status always default to pending
-      invoice.status = InvoiceStatus.Pending;
 
       //save new info to invoices database referencing the use with the object id
       const newInvoice = await invoiceModel.create(invoice);
