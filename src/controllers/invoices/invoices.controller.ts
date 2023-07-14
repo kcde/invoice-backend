@@ -65,9 +65,9 @@ export async function getInvoices(req: Request, res: Response) {
 }
 export async function getInvoice(req: Request, res: Response) {
   try {
-    const invoices = await invoiceModel.findOne({ id: req.params.invoiceId });
+    const invoice = await invoiceModel.findOne({ id: req.params.invoiceId });
 
-    res.status(200).json(invoices);
+    res.status(200).json(invoice);
   } catch (err) {
     console.log(err);
 
