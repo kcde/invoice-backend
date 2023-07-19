@@ -56,6 +56,7 @@ export async function getInvoices(req: Request, res: Response) {
   try {
     const user = await userModel.findOne({ email: res.locals.userEmail });
     const invoices = await invoiceModel.find({ user: user?._id });
+
     res.status(200).json(invoices);
   } catch (err) {
     console.log(err);
@@ -65,12 +66,38 @@ export async function getInvoices(req: Request, res: Response) {
 }
 export async function getInvoice(req: Request, res: Response) {
   try {
-    const invoice = await invoiceModel.findOne({ id: req.params.invoiceId });
+    const user = await userModel.findOne({ email: res.locals.userEmail });
+
+    const invoice = await invoiceModel.findOne({
+      id: req.params.invoiceId,
+      user: user?._id
+    });
     if (invoice == null) {
       return res.status(404).json({ error: 'invoice not found' });
     }
 
     res.status(200).json(invoice);
+  } catch (err) {
+    console.log(err);
+
+    return res.status(500).json({ error: 'unable to process request' });
+  }
+}
+export async function payInvoice(req: Request, res: Response) {
+  //Check if invoice belong to the currently logged in use
+
+  try {
+    const user = await userModel.findOne({ email: res.locals.userEmail });
+
+    const invoice = await invoiceModel.updateOne(
+      { id: req.params.invoiceId, user: user?._id },
+      { status: InvoiceStatus.Paid }
+    );
+    if (invoice.matchedCount == 0) {
+      return res.status(404).json({ error: 'invoice not found' });
+    }
+
+    res.status(200).json({ message: 'Invoice deleted', id: req.params.id });
   } catch (err) {
     console.log(err);
 
