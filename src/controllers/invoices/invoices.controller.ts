@@ -97,7 +97,7 @@ export async function payInvoice(req: Request, res: Response) {
       return res.status(404).json({ error: 'invoice not found' });
     }
 
-    res.status(200).json(invoice);
+    res.status(200).json({ message: 'Invoice deleted', id: req.params.id });
   } catch (err) {
     console.log(err);
 
