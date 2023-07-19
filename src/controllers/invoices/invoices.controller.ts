@@ -104,3 +104,24 @@ export async function payInvoice(req: Request, res: Response) {
     return res.status(500).json({ error: 'unable to process request' });
   }
 }
+
+export async function deleteInvoice(req: Request, res: Response) {
+  try {
+    const user = await userModel.findOne({ email: res.locals.userEmail });
+
+    const deletedInvoice = await invoiceModel.findOneAndDelete({
+      id: req.params.invoiceId,
+      user: user?.id
+    });
+
+    if (deleteInvoice == null) {
+      return res.status(404).json({ error: 'Inovice does not exist' });
+    }
+
+    return res.status(204).json({});
+  } catch (err) {
+    console.log(err);
+
+    return res.status(500).json({ error: 'unable to process request' });
+  }
+}
