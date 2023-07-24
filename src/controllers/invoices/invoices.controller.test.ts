@@ -147,10 +147,49 @@ describe('Test /api/invoices', () => {
       .set('authorization', 'Bearer ' + authToken);
 
     const updatedInvoice = await request
-      .get('/api/invoices/' + createInvoiceResponse.body.id)
+      .get(endpoint + createInvoiceResponse.body.id)
       .set('authorization', 'Bearer ' + authToken);
 
     expect(markInvoiceAsPaid.status).toBe(200);
     expect(updatedInvoice.body.status).toBe('paid');
+  });
+
+  it('should delete an invoice', async () => {
+    //create an invoice
+    const createInvoiceResponse = await request
+      .post(endpoint)
+      .send({
+        sender: {
+          streetAddress: 'N0 1 west road Lugbe',
+          city: 'Lugbe',
+          postCode: '900010',
+          country: 'Nigeria'
+        },
+        client: {
+          name: 'keside ezeala',
+          email: 'sddcdsc@s.com',
+          streetAddress: 'N0 1 west road Lugbe',
+          city: 'Lugbe',
+          postCode: '900010',
+          country: 'Nigeria'
+        },
+        description: 'Describe',
+        issueDate: '2012-09-01',
+        paymentTerm: '7',
+        items: [
+          {
+            name: 'jdjsjd',
+            quantity: '123',
+            price: '345'
+          }
+        ]
+      })
+      .set('authorization', 'Bearer ' + authToken);
+
+    const deleteInvoice = await request.delete(
+      endpoint + createInvoiceResponse.body.id
+    );
+
+    expect(deleteInvoice.status).toBe(204);
   });
 });
