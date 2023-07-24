@@ -186,10 +186,9 @@ describe('Test /api/invoices', () => {
       })
       .set('authorization', 'Bearer ' + authToken);
 
-    const deleteInvoice = await request.delete(
-      endpoint + createInvoiceResponse.body.id
-    );
-
+    const deleteInvoice = await request
+      .delete(endpoint + createInvoiceResponse.body.id)
+      .set('authorization', 'Bearer ' + authToken);
     expect(deleteInvoice.status).toBe(204);
   });
 });
