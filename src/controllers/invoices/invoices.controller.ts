@@ -151,7 +151,12 @@ export async function updateInvoice(req: Request, res: Response) {
       abortEarly: false,
       stripUnknown: true
     });
+
     //invoice id must match params id
+    if (invoice.id != req.params.invoiceId) {
+      return res.status(400).json({ error: 'Inovice id Mismatch' });
+    }
+
     const updatedInvoice = await invoiceModel
       .findOneAndReplace(
         {
