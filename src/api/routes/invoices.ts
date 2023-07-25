@@ -14,7 +14,7 @@ invoices.get('/', checkJWT, getInvoices);
 invoices.get('/:invoiceId', checkJWT, getInvoice);
 invoices.patch('/:invoiceId/paid', checkJWT, payInvoice);
 invoices.delete('/:invoiceId', checkJWT, deleteInvoice);
-invoices.patch('/:invoiceId', checkJWT, updateInvoice);
+invoices.put('/:invoiceId', checkJWT, updateInvoice);
 invoices.post('/', checkJWT, createInvoice);
 
 export default invoices;

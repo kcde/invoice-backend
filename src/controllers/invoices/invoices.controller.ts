@@ -171,7 +171,8 @@ export async function updateInvoice(req: Request, res: Response) {
         {
           projection: {
             _id: 0
-          }
+          },
+          returnDocument: 'after'
         }
       )
       .lean();
