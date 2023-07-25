@@ -41,3 +41,9 @@ export const invoiceSchema = object({
     .required('An item must be added')
     .min(1, 'An item must be added')
 });
+
+//this yup schema makes all fields required
+export const invoiceSchemaRequired = invoiceSchema.shape({
+  id: string().required('invoice id is required'),
+  user: string().required('userId not found')
+});

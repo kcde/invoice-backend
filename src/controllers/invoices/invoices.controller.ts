@@ -3,7 +3,10 @@ import userModel from '../../models/user.model';
 import { InvoiceStatus, type IInvoice } from '../../types';
 import { ValidationError } from 'yup';
 import dotenv from 'dotenv';
-import { invoiceSchema } from '../../schemas/invoiceForm.schema';
+import {
+  invoiceSchema,
+  invoiceSchemaRequired
+} from '../../schemas/invoiceForm.schema';
 import { generateID } from '../../utils';
 import invoiceModel from '../../models/invoice.model';
 import { Schema } from 'mongoose';
@@ -123,5 +126,58 @@ export async function deleteInvoice(req: Request, res: Response) {
     console.log(err);
 
     return res.status(500).json({ error: 'unable to process request' });
+  }
+}
+
+export async function updatedInvoice(req: Request, res: Response) {
+  //get user unique email from token
+  const userEmail = res.locals.userEmail as string;
+  const invoice: IInvoice = req.body;
+
+  // Get user's object id
+  const userObj = await userModel.findOne({ email: userEmail });
+  const objectId = userObj?._id as unknown as Schema.Types.ObjectId;
+  const user = await userModel.findOne(
+    { email: res.locals.userEmail },
+    { password: 0, __v: 0 }
+  );
+
+  //check if the invoice of current user is available,
+
+  try {
+    //validate new invoice to make sure it has all the values
+    invoiceSchemaRequired.validateSync(invoice, {
+      abortEarly: false,
+      stripUnknown: true
+    });
+
+    //create new doc from received invoice
+    //invoice id must match params id
+
+    const newInvoice = new invoiceModel(invoice);
+
+    const updatedInvoice = await invoiceModel
+      .findOneAndReplace(
+        {
+          id: req.params.invoiceId,
+          user: user?._id
+        },
+        {
+          client: invoice.client,
+          sender: invoice.sender,
+          id: invoice.id,
+          description: invoice.description
+        }
+      )
+      .lean();
+
+    res.json(updatedInvoice);
+  } catch (err) {
+    console.log(err);
+
+    if (err instanceof ValidationError) {
+      return res.status(400).json({ error: err.errors });
+    }
+    res.status(500).json({ error: 'unable to update invoice' });
   }
 }
