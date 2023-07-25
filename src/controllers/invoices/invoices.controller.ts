@@ -58,7 +58,10 @@ export async function createInvoice(req: Request, res: Response) {
 export async function getInvoices(req: Request, res: Response) {
   try {
     const user = await userModel.findOne({ email: res.locals.userEmail });
-    const invoices = await invoiceModel.find({ user: user?._id });
+    const invoices = await invoiceModel.find(
+      { user: user?._id },
+      { _id: 0, __v: 0 }
+    );
 
     res.status(200).json(invoices);
   } catch (err) {
@@ -71,10 +74,13 @@ export async function getInvoice(req: Request, res: Response) {
   try {
     const user = await userModel.findOne({ email: res.locals.userEmail });
 
-    const invoice = await invoiceModel.findOne({
-      id: req.params.invoiceId,
-      user: user?._id
-    });
+    const invoice = await invoiceModel.findOne(
+      {
+        id: req.params.invoiceId,
+        user: user?._id
+      },
+      { _id: 0, __v: 0 }
+    );
     if (invoice == null) {
       return res.status(404).json({ error: 'invoice not found' });
     }
@@ -129,20 +135,15 @@ export async function deleteInvoice(req: Request, res: Response) {
   }
 }
 
-export async function updatedInvoice(req: Request, res: Response) {
+export async function updateInvoice(req: Request, res: Response) {
   //get user unique email from token
   const userEmail = res.locals.userEmail as string;
   const invoice: IInvoice = req.body;
 
-  // Get user's object id
-  const userObj = await userModel.findOne({ email: userEmail });
-  const objectId = userObj?._id as unknown as Schema.Types.ObjectId;
   const user = await userModel.findOne(
     { email: res.locals.userEmail },
     { password: 0, __v: 0 }
   );
-
-  //check if the invoice of current user is available,
 
   try {
     //validate new invoice to make sure it has all the values
@@ -150,28 +151,22 @@ export async function updatedInvoice(req: Request, res: Response) {
       abortEarly: false,
       stripUnknown: true
     });
-
-    //create new doc from received invoice
     //invoice id must match params id
-
-    const newInvoice = new invoiceModel(invoice);
-
     const updatedInvoice = await invoiceModel
       .findOneAndReplace(
         {
           id: req.params.invoiceId,
           user: user?._id
         },
-        {
-          client: invoice.client,
-          sender: invoice.sender,
-          id: invoice.id,
-          description: invoice.description
-        }
+        invoice
       )
       .lean();
 
-    res.json(updatedInvoice);
+    if (updatedInvoice == null) {
+      return res.status(404).json({ error: 'Invoice not found' });
+    }
+
+    res.status(201).json(updatedInvoice);
   } catch (err) {
     console.log(err);
 
