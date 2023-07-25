@@ -136,9 +136,13 @@ export async function deleteInvoice(req: Request, res: Response) {
 }
 
 export async function updateInvoice(req: Request, res: Response) {
-  //get user unique email from token
-  const userEmail = res.locals.userEmail as string;
   const invoice: IInvoice = req.body;
+
+  // change status to pending if a draft
+
+  if (invoice.status == InvoiceStatus.Draft) {
+    invoice.status = InvoiceStatus.Pending;
+  }
 
   const user = await userModel.findOne(
     { email: res.locals.userEmail },
@@ -163,7 +167,12 @@ export async function updateInvoice(req: Request, res: Response) {
           id: req.params.invoiceId,
           user: user?._id
         },
-        invoice
+        invoice,
+        {
+          projection: {
+            _id: 0
+          }
+        }
       )
       .lean();
 
