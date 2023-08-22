@@ -3,7 +3,10 @@ import userModel from '../../models/user.model';
 import { InvoiceStatus, type IInvoice } from '../../types';
 import { ValidationError } from 'yup';
 import dotenv from 'dotenv';
-import { invoiceSchema } from '../../schemas/invoiceForm.schema';
+import {
+  invoiceSchema,
+  invoiceSchemaRequired
+} from '../../schemas/invoiceForm.schema';
 import { generateID } from '../../utils';
 import invoiceModel from '../../models/invoice.model';
 import { Schema } from 'mongoose';
@@ -55,7 +58,10 @@ export async function createInvoice(req: Request, res: Response) {
 export async function getInvoices(req: Request, res: Response) {
   try {
     const user = await userModel.findOne({ email: res.locals.userEmail });
-    const invoices = await invoiceModel.find({ user: user?._id });
+    const invoices = await invoiceModel.find(
+      { user: user?._id },
+      { _id: 0, __v: 0 }
+    );
 
     res.status(200).json(invoices);
   } catch (err) {
@@ -68,10 +74,13 @@ export async function getInvoice(req: Request, res: Response) {
   try {
     const user = await userModel.findOne({ email: res.locals.userEmail });
 
-    const invoice = await invoiceModel.findOne({
-      id: req.params.invoiceId,
-      user: user?._id
-    });
+    const invoice = await invoiceModel.findOne(
+      {
+        id: req.params.invoiceId,
+        user: user?._id
+      },
+      { _id: 0, __v: 0 }
+    );
     if (invoice == null) {
       return res.status(404).json({ error: 'invoice not found' });
     }
@@ -123,5 +132,62 @@ export async function deleteInvoice(req: Request, res: Response) {
     console.log(err);
 
     return res.status(500).json({ error: 'unable to process request' });
+  }
+}
+
+export async function updateInvoice(req: Request, res: Response) {
+  const invoice: IInvoice = req.body;
+
+  // change status to pending if a draft
+
+  if (invoice.status == InvoiceStatus.Draft) {
+    invoice.status = InvoiceStatus.Pending;
+  }
+
+  const user = await userModel.findOne(
+    { email: res.locals.userEmail },
+    { password: 0, __v: 0 }
+  );
+
+  try {
+    //validate new invoice to make sure it has all the values
+    invoiceSchemaRequired.validateSync(invoice, {
+      abortEarly: false,
+      stripUnknown: true
+    });
+
+    //invoice id must match params id
+    if (invoice.id != req.params.invoiceId) {
+      return res.status(400).json({ error: 'Inovice id Mismatch' });
+    }
+
+    const updatedInvoice = await invoiceModel
+      .findOneAndReplace(
+        {
+          id: req.params.invoiceId,
+          user: user?._id
+        },
+        invoice,
+        {
+          projection: {
+            _id: 0
+          },
+          returnDocument: 'after'
+        }
+      )
+      .lean();
+
+    if (updatedInvoice == null) {
+      return res.status(404).json({ error: 'Invoice not found' });
+    }
+
+    res.status(201).json(updatedInvoice);
+  } catch (err) {
+    console.log(err);
+
+    if (err instanceof ValidationError) {
+      return res.status(400).json({ error: err.errors });
+    }
+    res.status(500).json({ error: 'unable to update invoice' });
   }
 }

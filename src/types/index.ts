@@ -46,6 +46,11 @@ export interface IInvoice {
   items: IInvoiceItem[];
 }
 
+export interface IInvoiceUpdatePayload extends IInvoice {
+  id: string;
+  user: Schema.Types.ObjectId;
+}
+
 export enum InvoiceStatus {
   Pending = 'pending',
   Paid = 'paid',
