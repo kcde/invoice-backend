@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import userModel from '../../models/user.model';
 import type { IUserCreateBody, IUserLoginBody } from '../../types';
 import jwt from 'jsonwebtoken';
-import bcrypt, { compare } from 'bcrypt';
+import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import { validateEmail } from '../../utils';
 
