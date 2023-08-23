@@ -123,7 +123,7 @@ export async function deleteInvoice(req: Request, res: Response) {
       user: user?.id
     });
 
-    if (deleteInvoice == null) {
+    if (deletedInvoice == null) {
       return res.status(404).json({ error: 'Inovice does not exist' });
     }
 

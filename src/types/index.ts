@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { ObjectId, Schema } from 'mongoose';
+import { Schema } from 'mongoose';
 
 export interface IUserCreateBody {
   email: string;
