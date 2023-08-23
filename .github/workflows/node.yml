@@ -8,6 +8,8 @@ jobs:
   build:
     env:
       CI: true
+      PRIVATE_KEY: ${{secrets.PRIVATE_KEY}}
+      SALT_ROUNDS: ${{secrets.SALT_ROUNDS}}
     runs-on: ubuntu-latest
     strategy:
       matrix:
