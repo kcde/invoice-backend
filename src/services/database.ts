@@ -8,9 +8,9 @@ let testMongo: MongoMemoryServer;
 const { MONGO_URI, ENV } = process.env;
 export async function connectDB() {
   try {
-    testMongo = await MongoMemoryServer.create();
-    const testURI = testMongo.getUri();
     if (ENV == 'TEST') {
+      testMongo = await MongoMemoryServer.create();
+      const testURI = testMongo.getUri();
       console.log('running test');
 
       await mongoose.connect(testURI as unknown as string);
