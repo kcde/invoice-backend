@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "npx nodemon",
-    "start": "npm run build && node build/server.js",
+    "start": "node build/server.js",
     "build": "rimraf ./build && tsc",
+    "build-and-start": "npm run build && npm run start",
     "lint": "eslint . --ext  .ts ",
     "lint-and-fix": "eslint . --ext  .ts --fix ",
     "format": "prettier --config .prettierrc 'src/**/*.ts' --write",
